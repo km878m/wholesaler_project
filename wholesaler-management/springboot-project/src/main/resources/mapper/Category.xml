@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jinzeyu.springbootproject.mapper.CategoryMapper">
+
+    <resultMap id="categoryMap" type="com.jinzeyu.springbootproject.pojo.Category">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="remark" property="remark"/>
+        <result column="pid" property="pid"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+
+        <collection property="children" ofType="com.jinzeyu.springbootproject.pojo.Category" column="id" select="selectByPid"/>
+    </resultMap>
+
+    <insert id="save">
+        insert into category(name,remark,pid)
+        values (#{name},#{remark},#{pid})
+    </insert>
+
+    <update id="updateById">
+        update category set name = #{name}, remark = #{remark}, update_time = #{updateTime} where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from category where id = #{id}
+    </delete>
+
+    <select id="list" resultType="com.jinzeyu.springbootproject.pojo.Category">
+        select * from category where pid is not null
+    </select>
+
+    <select id="listByCondition" resultMap="categoryMap">
+        select c1.* from category c1
+        left join category c2
+        on  c1.id = c2.pid
+        <where>
+            isnull(c1.pid)
+            <if test="name != null and name != ''">and (c1.name like concat('%',#{name},'%') or c2.name like concat('%',#{name},'%'))</if>
+        </where>
+        group by c1.id
+    </select>
+
+    <select id="getById" resultType="com.jinzeyu.springbootproject.pojo.Category">
+        select * from category where id = #{id}
+    </select>
+
+    <select id="selectByPid" resultType="com.jinzeyu.springbootproject.pojo.Category">
+        select * from category where pid = #{id}
+    </select>
+
+</mapper>

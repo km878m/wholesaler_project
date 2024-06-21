@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jinzeyu.springbootproject.mapper.LogisticsMapper">
+    <insert id="save">
+        insert into logistics(name, address, phone, front_man) values (#{name},#{address},#{phone},#{frontMan})
+    </insert>
+
+    <update id="updateById">
+        update logistics set name = #{name}, address = #{address}, phone = #{phone}, front_man = #{frontMan}, update_time = #{updateTime} where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from logistics where id = #{id}
+    </delete>
+
+    <select id="list" resultType="com.jinzeyu.springbootproject.pojo.Logistics">
+        select * from logistics
+    </select>
+
+    <select id="listByCondition" resultType="com.jinzeyu.springbootproject.pojo.Logistics">
+        select * from logistics
+        <where>
+            <if test="name != null and name != ''">name like concat('%',#{name},'%')</if>
+            <if test="phone != null and phone != ''">and phone like concat('%',#{phone},'%')</if>
+        </where>
+    </select>
+
+    <select id="getById" resultType="com.jinzeyu.springbootproject.pojo.Logistics">
+        select * from logistics where id = #{id}
+    </select>
+
+</mapper>

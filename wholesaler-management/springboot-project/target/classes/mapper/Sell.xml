@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jinzeyu.springbootproject.mapper.SellMapper">
+
+    <insert id="save">
+        insert into sell_form(admin_name,customer_name,logistics_name,sell_number)
+        values (#{adminName},#{customerName},#{logisticsName},#{sellNumber})
+    </insert>
+
+    <insert id="saveItem">
+        insert into sell_form_item(pid, product_name, price, total_prices, number ,product_description)
+        values (#{pid},#{productName},#{price},#{totalPrices},#{number},#{productDescription})
+    </insert>
+
+    <update id="updateItemById">
+        update sell_form_item set number = #{number}, price = #{price}, total_prices = #{totalPrices} where id = #{id}
+    </update>
+
+    <update id="updateById">
+        update sell_form set  status = #{status},update_time = #{updateTime},total_prices = #{totalPrices},transporter_name = #{transporterName},out_time = #{outTime},out_time_flag = #{outTimeFlag} where id = #{id}
+    </update>
+
+    <update id="updateNumberById">
+        update sell_form set number = #{number} where id = #{id}
+    </update>
+
+    <update id="updateTotalPricesById">
+        update sell_form set total_prices = #{totalPrices} where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from sell_form where id = #{id}
+    </delete>
+
+    <delete id="deleteByPid">
+        delete from sell_form_item where pid = #{id}
+    </delete>
+
+    <delete id="deleteItemById">
+        delete from sell_form_item where id = #{id}
+    </delete>
+
+    <resultMap id="itemMap" type="com.jinzeyu.springbootproject.pojo.SellForm">
+        <id column="id" property="id"/>
+        <result column="admin_name" property="adminName"/>
+        <result column="customer_name" property="customerName"/>
+        <result column="logistics_name" property="logisticsName"/>
+        <result column="total_prices" property="totalPrices"/>
+        <result column="status" property="status"/>
+        <result column="sell_number" property="sellNumber"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+
+        <collection property="children" ofType="com.jinzeyu.springbootproject.pojo.SellFormItem" column="id" select="selectByPid"/>
+    </resultMap>
+
+    <select id="byId" resultMap="itemMap">
+        select * from sell_form where id = #{id}
+    </select>
+
+    <select id="selectByPid" resultType="com.jinzeyu.springbootproject.pojo.SellFormItem">
+        select * from sell_form_item where pid = #{id}
+    </select>
+
+    <select id="returnId" resultType="java.lang.Integer">
+        select id from sell_form where sell_number = #{sellNumber}
+    </select>
+
+    <select id="itemById" resultType="com.jinzeyu.springbootproject.pojo.SellFormItem">
+        select * from sell_form_item where id = #{id}
+    </select>
+
+    <select id="listByCondition" resultType="com.jinzeyu.springbootproject.pojo.SellForm">
+        select * from sell_form
+        <where>
+            <if test="adminName != null and adminName != ''">admin_name like concat('%',#{adminName},'%')</if>
+            <if test="customerName != null and customerName != ''">and customer_name like concat('%',#{customerName},'%')</if>
+            <if test="logisticsName != null and logisticsName  != ''">and logistics_name like concat('%',#{logisticsName},'%')</if>
+            <if test="status != null and status != ''">and status like concat('%',#{status},'%')</if>
+        </where>
+    </select>
+
+    <select id="selectNumberById" resultType="java.lang.Integer">
+        select number from sell_form where id = #{id}
+    </select>
+
+    <select id="selectTotalPricesById" resultType="java.lang.Integer">
+        select total_prices from sell_form where id = #{id}
+    </select>
+
+    <select id="selectOutTimeFlagById" resultType="java.lang.Boolean">
+        select out_time_flag from  sell_form where id = #{id}
+    </select>
+
+    <select id="getPriceCountByTimeRange" resultType="com.jinzeyu.springbootproject.pojo.SellReturnCountPO">
+        select sum(total_prices) as count,DATE_FORMAT(create_time,'%Y-%m-%d') as date from sell_form
+        where
+        <choose>
+            <when test="timeRange == 'week'">
+                create_time >= DATE_SUB(NOW(),INTERVAL 1 WEEK)
+            </when>
+            <when test="timeRange == 'month'">
+                create_time >= DATE_SUB(NOW(),INTERVAL 1 MONTH)
+            </when>
+            <when test="timeRange == 'month2'">
+                create_time >= DATE_SUB(NOW(),INTERVAL 2 MONTH)
+            </when>
+            <when test="timeRange == 'month3'">
+                create_time >= DATE_SUB(NOW(),INTERVAL 3 MONTH)
+            </when>
+            <otherwise>
+                create_time > now()
+            </otherwise>
+        </choose>
+        group by date
+    </select>
+
+    <select id="getNumberCountByTimeRange" resultType="com.jinzeyu.springbootproject.pojo.SellReturnCountPO">
+        select sum(number) as count,DATE_FORMAT(create_time,'%Y-%m-%d') as date from sell_form
+        where
+        <choose>
+            <when test="timeRange == 'week'">
+                create_time >= DATE_SUB(NOW(),INTERVAL 1 WEEK)
+            </when>
+            <when test="timeRange == 'month'">
+                create_time >= DATE_SUB(NOW(),INTERVAL 1 MONTH)
+            </when>
+            <when test="timeRange == 'month2'">
+                create_time >= DATE_SUB(NOW(),INTERVAL 2 MONTH)
+            </when>
+            <when test="timeRange == 'month3'">
+                create_time >= DATE_SUB(NOW(),INTERVAL 3 MONTH)
+            </when>
+            <otherwise>
+                create_time > now()
+            </otherwise>
+        </choose>
+        group by date
+    </select>
+
+</mapper>

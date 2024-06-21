@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jinzeyu.springbootproject.mapper.ProductMapper">
+
+    <insert id="save">
+        insert into product(name,description,manufacturer,category,price)
+        values (#{name},#{description},#{manufacturer},#{category},#{price})
+    </insert>
+
+    <update id="updateById">
+        update product set name = #{name}, description = #{description}, manufacturer = #{manufacturer}, category = #{category}, price = #{price}, update_time = #{updateTime},number = #{number} where id = #{id}
+    </update>
+
+    <update id="updateNumberByName">
+        update product set number = #{number} where name = #{productName}
+    </update>
+
+    <delete id="deleteById">
+        delete from product where id = #{id}
+    </delete>
+
+    <select id="list" resultType="com.jinzeyu.springbootproject.pojo.Product">
+        select * from product
+    </select>
+
+    <select id="listByCondition" resultType="com.jinzeyu.springbootproject.pojo.Product">
+        select * from product
+        <where>
+            <if test="name != null and name != ''">name like concat('%',#{name},'%')</if>
+            <if test="description != null and description != ''">and description like concat('%',#{description},'%')</if>
+            <if test="manufacturer != null and manufacturer  != ''">and manufacturer like concat('%',#{manufacturer},'%')</if>
+            <if test="category != null and category != ''">and category like concat('%',#{category},'%')</if>
+        </where>
+    </select>
+
+    <select id="getById" resultType="com.jinzeyu.springbootproject.pojo.Product">
+        select * from product where id = #{id}
+    </select>
+
+    <select id="getPriceByName" resultType="java.lang.Integer">
+        select price from product where name = #{productName}
+    </select>
+
+    <select id="getNumberByName" resultType="java.lang.Integer">
+        select number from product where name = #{productName}
+    </select>
+
+    <select id="getDescriptionByName" resultType="java.lang.String">
+        select description from product where name = #{productName}
+    </select>
+
+</mapper>

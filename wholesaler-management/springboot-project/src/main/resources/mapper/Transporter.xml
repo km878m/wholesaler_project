@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jinzeyu.springbootproject.mapper.TransporterMapper">
+    <insert id="save">
+        insert into transporter(name, address, phone, email, sex) values (#{name},#{address},#{phone},#{email},#{sex})
+    </insert>
+
+    <update id="updateById">
+        update transporter set name = #{name}, address = #{address}, phone = #{phone}, email = #{email}, sex = #{sex}, update_time = #{updateTime} where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from transporter where id = #{id}
+    </delete>
+
+    <select id="list" resultType="com.jinzeyu.springbootproject.pojo.Transporter">
+        select * from transporter
+    </select>
+
+    <select id="listByCondition" resultType="com.jinzeyu.springbootproject.pojo.Transporter">
+        select * from transporter
+        <where>
+            <if test="name != null and name != ''">name like concat('%',#{name},'%')</if>
+            <if test="phone != null and phone != ''">and phone like concat('%',#{phone},'%')</if>
+        </where>
+    </select>
+
+    <select id="getById" resultType="com.jinzeyu.springbootproject.pojo.Transporter">
+        select * from transporter where id = #{id}
+    </select>
+
+</mapper>
